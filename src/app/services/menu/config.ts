@@ -5,7 +5,7 @@ export const getMenuData: any[] = [
   },
   {
     title: 'Dashboards',
-    key: 'dashboards',
+    key: 'dashboards',   
     icon: 'fa fa-area-chart',
     url: '/dashboard/alpha',
   },
