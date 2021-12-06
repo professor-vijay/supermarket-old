@@ -1,6 +1,9 @@
 import { Component, OnInit, } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap'
 import { AuthService } from 'src/app/auth.service';
+import { Observable } from 'rxjs';
+import {  map } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-products',
@@ -9,6 +12,7 @@ import { AuthService } from 'src/app/auth.service';
 })
 export class ProductsComponent implements OnInit {
   CompanyId: any;
+  id:any
   taxgroups: any;
   taxGroupId: number;
   producttypes: any;
@@ -22,8 +26,11 @@ export class ProductsComponent implements OnInit {
   checked: Boolean = true
   listOfSearchName: string[] = []
   listOfSearchAddress: string[] = []
-  term: string = '';
+  // term: string = '';
+  term:""
   https = 0;
+  prod: any;
+  products: any
   // listOfData = orders
   // listOfDisplayData = [...this.listOfData]
   mapOfSort: { [key: string]: any } = {
@@ -35,11 +42,14 @@ export class ProductsComponent implements OnInit {
     price: null,
     quantity: null,
     status: null,
+
   }
   sortName: string | null = null
   sortValue: string | null = null
   loginfo: any;
   constructor(private modalService: NgbModal, private Auth: AuthService,) {
+    var logInfo = JSON.parse(localStorage.getItem("loginInfo"));
+    this.CompanyId = logInfo.CompanyId;
   }
   // listOfPosition: NzPlacementType[] = [
   //   'bottomLeft'
@@ -55,11 +65,12 @@ export class ProductsComponent implements OnInit {
     this.Auth.getloginfo().subscribe(data => {
       this.loginfo = data
       this.getMasterproduct();
-      this.gettax();
-      this.getproducttype();
-      this.getUnits();
-      this.getKotGroups();
-      this.getCategories();
+      // this.getproducts();
+      // this.gettax();
+      // this.getproducttype();
+      // this.getUnits();
+      // this.getKotGroups();
+      // this.getCategories();
     })
 
   }
@@ -70,6 +81,12 @@ export class ProductsComponent implements OnInit {
   close(): void {
     this.visible = false
   }
+  arrayBuffer: any;
+  file: File;
+  incomingfile(event) {
+    this.file = event.target.files[0];
+    console.log(this.file);
+  }
   sort(sortName: string, value: string): void {
     this.sortName = sortName
     this.sortValue = value
@@ -79,77 +96,91 @@ export class ProductsComponent implements OnInit {
       }
     }
   }
+
+  active(id, act) {
+    console.log(id, act)
+    this.Auth.prdactive(id, act).subscribe(data => {
+      this.getMasterproduct();
+      // this.setproducts();
+      // this. getproducts()
+    });
+  }
+
+  changefilter(bool) {
+    console.log(bool)
+    if (bool) {
+      this.prod = this.masterproduct.products;
+    } else {
+      this.prod = this.masterproduct.products.filter(x => x.isactive);
+    }
+    console.log(this.prod.length)
+  }
+
+
+
   getMasterproduct() {
-    this.Auth.getMasterProduct(this.loginfo.companyId).subscribe(data => {
+    this.Auth.getProduct(this.id, this.CompanyId = 1).subscribe(data => {
       this.masterproduct = data
-      this.filteredvalues = this.masterproduct;
-      console.log(this.masterproduct)
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
+      this.prod = this.masterproduct.products.filter(x => x.isactive);
+      console.log(this.prod)
+      // this.filteredvalues = this.masterproduct;
+      // console.log(this.masterproduct)
+      // this.https++;
+      // if (this.https == 6)
+      //   this.setproducts();
     })
   }
   gettax() {
     this.Auth.getTax(this.loginfo.companyId).subscribe(data => {
       this.taxgroups = data;
       console.log(this.taxgroups);
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
+  
     });
   }
   getproducttype() {
     this.Auth.getProductType().subscribe(data => {
       this.producttypes = data;
       console.log(data);
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
+     
     })
   }
   getUnits() {
     this.Auth.getUnits().subscribe(data => {
       this.units = data;
       console.log(data);
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
+   
     })
   }
   getKotGroups() {
     this.Auth.getKotgroups().subscribe(data => {
       this.kotgroups = data;
       console.log(data);
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
+     
     })
   }
-  getCategories() {
-    this.Auth.getCategory(this.loginfo.companyId).subscribe(data => {
-      this.categories = data;
-      console.log(this.categories);
-      this.https++;
-      if (this.https == 6)
-        this.setproducts();
-    });
-  }
-  setproducts() {
-    // this.masterproduct.forEach(prod => {
-    //   prod.category = this.categories.filter(x => x.id == prod.categoryId)[0];
-    //   prod.taxGroup = this.taxgroups.filter(x => x.id == prod.taxGroupId)[0];
-    // });
-    this.filteredvalues = this.masterproduct;
-    console.log(this.masterproduct)
-  }
+  // getCategories() {
+  //   this.Auth.getCategory(this.loginfo.CompanyId).subscribe(data => {
+  //     this.categories = data;
+  //     console.log(this.categories);
+ 
+  //   });
+  // }
+  // setproducts() {
+  //   // this.masterproduct.forEach(prod => {
+  //   //   prod.category = this.categories.filter(x => x.id == prod.categoryId)[0];
+  //   //   prod.taxGroup = this.taxgroups.filter(x => x.id == prod.taxGroupId)[0];
+  //   // });
+  //   this.filteredvalues = this.masterproduct;
+  //   console.log(this.masterproduct)
+  // }
 
-  filteredvalues = [];
-  filtersearch(): void {
-    this.filteredvalues = this.term
-      ? this.masterproduct.filter(x => x.name.toLowerCase().includes(this.term.toLowerCase()))
-      : this.masterproduct;
-    console.log(this.filteredvalues)
-  }
+  // filteredvalues = [];
+  // filtersearch(): void {
+  //   this.filteredvalues = this.term
+  //     ? this.masterproduct.filter(x => x.name.toLowerCase().includes(this.term.toLowerCase()))
+  //     : this.masterproduct;
+  //   console.log(this.filteredvalues)
+  // }
 
 
 }

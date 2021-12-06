@@ -106,11 +106,14 @@ export class AuthService {
   }
   getMasterProduct(companyid) {
     // return this.http.get(this.server_ip + ':8081/getmasterproduct')
-    return this.http.get(this.base_url + 'Product/getmasterproducts?CompanyId=' + companyid)
+    return this.http.get(this.base_url1 + 'Product/getmasterproducts?CompanyId=' + companyid)
   }
   getproductbyid(id) {
     return this.http.get(this.base_url + 'Product/getproductbyid?ProductId=' + id)
   }
+  getFilterProducts(id, compId) {  
+    return this.http.get(this.base_url1 + "Product/GetById?id=" + id + "&compId=" + compId)
+}
   addproduct_l(product, userid, storeid) {
     return this.http.post(
       this.base_url + 'Product/addProduct?userid=' + userid + '&storeid=' + storeid,
@@ -120,9 +123,15 @@ export class AuthService {
   updateproduct_l(product, userid) {
     return this.http.post(this.base_url + 'Product/updateProduct?userid=' + userid, product)
   }
+  prdactive(Id, active) {
+    return this.http.get(this.base_url1 +"Product/UpdateAct?Id=" + Id + "&active=" + active);
+  }
+  getProduct(id, compId) {
+    return this.http.get(this.base_url +"Product/GetById?id=" + id + "&compId=" + compId);
+  }
+
   getcategories(companyid, type) {
-    return this.http.get(
-      this.base_url + `Category/getcategories?CompanyId=${companyid}&type=${type}`,
+    return this.http.get(this.base_url + `Category/getcategories?CompanyId=${companyid}&type=${type}`,
     )
   }
   addcategories(category) {
@@ -261,16 +270,17 @@ export class AuthService {
     return this.http.get(this.server_ip + ':8081/gettaxgroup')
   }
   getProductType() {
-    // return this.http.get(this.base_url + 'Product/getProductType')
-    return this.http.get(this.server_ip + ':8081/getproducttype')
+    return this.http.get(this.base_url + 'Product/getProductType')
+    // return this.http.get(this.server_ip + ':8081/getproducttype')
   }
 
   getUnits() {
-    // return this.http.get(this.base_url + 'Product/getUnits')
-    return this.http.get(this.server_ip + ':8081/getunit')
+    return this.http.get(this.base_url + 'Product/getUnits')
+    // return this.http.get(this.server_ip + ':8081/getunit')
   }
   getCategory(CompanyId) {
-    return this.http.get(this.server_ip + ':8081/getmastercategory')
+    return this.http.get(this.base_url + 'Category/getcategory')
+    // return this.http.get(this.server_ip + ':8081/getmastercategory')
   }
   addProduct(product) {
     return this.http.post(this.server_ip + ':8081/addmasterproduct', product)

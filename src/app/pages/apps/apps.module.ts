@@ -43,6 +43,7 @@ import { PurchaseEntryComponent } from './purchase-entry/purchase-entry.componen
 import { VendorsComponent } from './vendors/vendors.component';
 import { TaxgroupComponent } from './taxgroup/taxgroup.component'
 import { PurchasePipe } from 'src/app/pipes/purchase/purchase.pipe'
+import { Ng2SearchPipeModule } from 'ng2-search-filter'
 
 const COMPONENTS = [
   AppsMessagingComponent,
@@ -76,6 +77,7 @@ const COMPONENTS = [
     SortablejsModule,
     NestableModule,
     NgbModule,
+    Ng2SearchPipeModule,
   ],
   declarations: [...COMPONENTS, SaleComponent, SettingComponent, ReceiptComponent, CustomerComponent, AddproductComponent, StockEntryComponent, BatchEntryComponent, InternalTransferComponent, ProductsComponent, CategoryComponent, AddcategoryComponent, PurchaseEntryComponent, VendorsComponent, TaxgroupComponent, PurchasePipe
   ],

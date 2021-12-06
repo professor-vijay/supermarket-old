@@ -25,6 +25,7 @@ import { MockHttpCallInterceptor } from './services/fakeApi'
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 
 // locale resistration
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { registerLocaleData } from '@angular/common'
 import { default as localeEn } from '@angular/common/locales/en'
 import { NZ_I18N, en_US as localeZorro } from 'ng-zorro-antd';
@@ -43,6 +44,7 @@ registerLocaleData(localeEn, 'en')
     FormsModule,
     AppRoutingModule,
     NgxElectronModule,
+    Ng2SearchPipeModule,
     // translate
     TranslateModule.forRoot(),
 
