@@ -47,9 +47,9 @@ export class ProductsComponent implements OnInit {
   sortName: string | null = null
   sortValue: string | null = null
   loginfo: any;
-  constructor(private modalService: NgbModal, private Auth: AuthService,) {
-    var logInfo = JSON.parse(localStorage.getItem("loginInfo"));
-    this.CompanyId = logInfo.CompanyId;
+  constructor(private modalService: NgbModal, private Auth: AuthService) {
+    // var logInfo = JSON.parse(localStorage.getItem("loginInfo"));
+    // this.CompanyId = logInfo.CompanyId;
   }
   // listOfPosition: NzPlacementType[] = [
   //   'bottomLeft'

@@ -2,6 +2,8 @@
 const https = require('https');
 // Type 2: Persistent datastore with manual loading
 var Datastore = require('nedb')
+// db.orderkey = new Datastore({ filename: './database/orderkey.db', autoload: true });
+var orderkeydb = new Datastore({ filename: './database/orderkey.db', autoload: true });
 var productdb = new Datastore({ filename: './database/products.db' });
 var customerdb = new Datastore({ filename: './database/customer.db' });
 var customeraddressdb = new Datastore({ filename: './database/customeraddress.db' });
@@ -30,6 +32,12 @@ var stockbatchdb = new Datastore({ filename: './database/stockbatch.db' });
 
 
 function loadatabase() {
+    orderkeydb.loadDatabase((data, error) => {
+        if (error) {
+            console.log("Error loading database!")
+        } else {
+        }
+    })
     productdb.loadDatabase((data, error) => {
         if (error) {
             console.log("Error loading database!")
@@ -561,7 +569,7 @@ app.post('/updatepreference', function (req, res) {
 })
 
 app.post('/saveStockBatch', function (req, res) {
-    console.log("qwerty",req.body)
+    console.log("qwerty", req.body)
     if (req.body) {
         // stockbatchdb.insert(req.body, function (err, newDoc) {
         var i = 0
@@ -699,7 +707,12 @@ app.post('/addcustomer', function (req, res) {
         res.send(obj)
     });
 })
-
+app.post('/setorderkey', function (req, res) {
+    orderkeydb.update({ _id: req.body._id }, req.body, { upsert: true }, function (err, newdoc) {
+        var obj = { status: 200, msg: "data added succesfully" }
+        res.send(obj)
+    });
+});
 
 // customerdb.remove({}, { multi: true }, function (err, newDoc) {
 //         axios.get('https://biz1retail.azurewebsites.net/api/Customer/GetCustomerList?CompanyId=1')
@@ -725,6 +738,8 @@ app.post('/updatecustomer', function (req, res) {
         res.send({ message: 'yes iam the server' })
     });
 });
+
+
 
 app.get('/syncdata', function (req, response) {
     var actioncount = 6;
@@ -879,6 +894,8 @@ app.get('/syncdata', function (req, response) {
 
     })
 })
+
+
 app.get('/getloginfo', function (req, res) {
     loginfo.findOne({}, function (err, doc) {
         res.send(doc)

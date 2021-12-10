@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/auth.service';
 // const orders: any = require('./data.json')
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap'
 import {
@@ -12,8 +13,12 @@ import {
   styleUrls: ['./receipt.component.scss']
 })
 export class ReceiptComponent implements OnInit {
-  constructor(private modalService: NgbModal,private nzContextMenuService: NzContextMenuService) { }
+  constructor(private modalService: NgbModal, private nzContextMenuService: NzContextMenuService, private Auth: AuthService) { }
   isvisible: boolean;
+  orders:any
+  sortfield: any;
+  x: number;
+  y: number;
   visible = false;
   checked: Boolean = true
   listOfSearchName: string[] = []
@@ -42,7 +47,9 @@ export class ReceiptComponent implements OnInit {
   closeMenu(): void {
     this.nzContextMenuService.close()
   }
-  ngOnInit() { }
+  ngOnInit() { 
+    this.getorders()
+  }
   open(): void {
     this.visible = true
   }
@@ -57,6 +64,38 @@ export class ReceiptComponent implements OnInit {
       if (this.mapOfSort.hasOwnProperty(key)) {
         this.mapOfSort[key] = key === sortName ? value : null
       }
+    }
+  }
+
+
+  getorders() {
+    this.Auth.getOrders().subscribe(data => {
+      this.orders = data
+      console.log(this.orders)
+
+    })
+  }
+
+  sortsettings(field) {
+    if (this.sortfield == field) {
+      this.x = this.x * -1;
+      this.y = this.y * -1;
+    } else {
+      this.sortfield = field;
+      this.x = -1;
+      this.y = 1;
+    }
+  }
+
+  get sortData() {
+    if (this.orders) {
+      return this.orders.sort((a, b) => {
+        if (a[this.sortfield] < b[this.sortfield]) return this.x;
+        else if (a[this.sortfield] > b[this.sortfield]) return this.y;
+        else return 0;
+      });
+    } else {
+      return []
     }
   }
 

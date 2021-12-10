@@ -40,6 +40,12 @@ export const getMenuData: any[] = [
     url: '/apps/batchentry',
   },
   {
+    title: 'Stock Entry',
+    icon: 'fa fa-th-large',
+    key: 'appsStockEntry',
+    url: '/apps/stockentry',
+  },
+  {
     title: 'Customer',
     key: 'appsSetting',
     icon: 'fe fe-users',

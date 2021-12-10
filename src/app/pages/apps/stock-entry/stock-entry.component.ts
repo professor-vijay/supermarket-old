@@ -15,8 +15,8 @@ export class StockEntryComponent implements OnInit {
 
   stockentry = { barcodeId: null, quantity: null, price: null, expiarydate: "", companyid: 1, storeid: 8, productid: 0, product: null, batchno: null, entrydatetime: "" }
   products: any = [];
-  CompanyId: any;
-  StoreId: any;
+  CompanyId: any = 1;
+  StoreId: any = 26;
   inputValue: string = '';
   filterproduct = [];
   batchno: any = [];

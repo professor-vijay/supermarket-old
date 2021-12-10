@@ -11,6 +11,7 @@ export class AuthService {
   base_url1 = 'https://localhost:44315/api/'
   base_url = 'http://biz1retail.azurewebsites.net/api/'
   server_ip = 'http://localhost'
+  dburl = 'http://localhost:2357/'
   constructor(private http: HttpClient) {
     // this.sver_ip = localStorage.getItem('serverip');
     // gdfjhgfy
@@ -275,7 +276,11 @@ export class AuthService {
   }
 
   getUnits() {
-    return this.http.get(this.base_url + 'Product/getUnits')
+    return this.http.get(this.base_url1 + 'Product/getUnits')
+    // return this.http.get(this.server_ip + ':8081/getunit')
+  }
+  getOrders() {
+    return this.http.get(this.base_url + 'Product/getorders')
     // return this.http.get(this.server_ip + ':8081/getunit')
   }
   getCategory(CompanyId) {
@@ -321,9 +326,7 @@ export class AuthService {
   getorderdb(typeid) {
     return this.http.get(this.server_ip + ':8081/getorders?typeid=' + typeid)
   }
-  // getorders() {
-  //   return this.http.get('http://localhost:8081/getorders')
-  // }
+ 
   deleteorderfromnedb(orderid, stockBatches) {
     return this.http.post(this.server_ip + ':8081/deleteorder?_id=' + orderid, stockBatches)
   }
@@ -370,5 +373,11 @@ export class AuthService {
   saveStockbatch(stockBatches) {
     console.log(stockBatches)
     return this.http.post(this.server_ip + ':8081/saveStockBatch', stockBatches)
+  }
+
+  updateorderkey(orderkey) {
+    // return this.http.post(this.dburl + 'setorderkey', order)
+    return this.http.post(this.server_ip + ':8081/setorderkey', orderkey)
+
   }
 }

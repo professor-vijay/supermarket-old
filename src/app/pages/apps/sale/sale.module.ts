@@ -2,14 +2,17 @@ import { ɵSafeHtml } from '@angular/core'
 import { SafeHtml } from '@angular/platform-browser'
 import moment from 'moment'
 export class OrderModule {
+    Quantity: number
     Id: number
     Updated: boolean = false;
     OrderNo: number;
-    InvoiceNo: number;
+    InvoiceNo: string;
     SourceId: number;
     AggregatorOrderId: string;
     UPOrderId: string;
     StoreId: number;
+    changeditems: Array<string>
+ 
     // CustomerId: number;
     // CustomerAddressId: number;
     OrderStatusId: number;
@@ -74,11 +77,12 @@ export class OrderModule {
         this.Items = [];
         this.Updated = false;
         this.OrderNo = 0;
-        this.InvoiceNo = 0;
+        this.InvoiceNo = '';
         this.SourceId = 0;
         this.AggregatorOrderId = '';
         this.UPOrderId = '';
         this.StoreId = 0;
+        this.changeditems = []
         // this.CustomerId = 0;
         // this.CustomerAddressId = 0;
         this.OrderStatusId = 0;
@@ -232,6 +236,7 @@ export class OrderItemModule {
     IsInclusive: boolean
     stockBatchId: number
     _id: string
+  Quantity: number
     constructor(product) {
         console.log(product)
         this.Id = 0;

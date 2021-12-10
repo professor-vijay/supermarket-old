@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild, ElementRef, HostListener } f
 import * as moment from 'moment'
 import { FormControl, Validators } from '@angular/forms';
 import { NzModalService } from 'ng-zorro-antd/modal'
-import { NgbModal, ModalDismissReasons,NgbModalConfig } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal, ModalDismissReasons, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap'
 import { AuthService } from 'src/app/auth.service';
 import { NzNotificationService } from 'ng-zorro-antd'
 import { Observable } from 'rxjs';
@@ -30,6 +30,7 @@ export class SaleComponent implements OnInit {
   paymenttypeid = 1;
   isuppercase: boolean = false;
   OrderNo = 0;
+  StoreId = 26;
   loginfo: any;
   isDisable = false;
   @HostListener('window:keyup', ['$event'])
@@ -106,7 +107,7 @@ export class SaleComponent implements OnInit {
   ) {
     config.backdrop = 'static';
     config.keyboard = false;
-   }
+  }
   // getErrorMessage() {
   //   if (this.quantityfc.hasError('required')) {
   //     return "Quantity can't be Empty";
@@ -114,8 +115,11 @@ export class SaleComponent implements OnInit {
 
   //   return this.quantityfc.hasError('min') ? 'Quantity should be greater than 0' : '';
   // }
- 
+
+  orderkey = { orderno: 1, timestamp: 0, GSTno: '' }
+
   ngOnInit(): void {
+    this.orderkey = localStorage.getItem("orderkey") ? JSON.parse(localStorage.getItem("orderkey")) : { orderno: 1, timestamp: 0, GSTno: '' }
     this.Auth.getloginfo().subscribe(data => {
       this.loginfo = data
       this.order = new OrderModule(6)
@@ -123,6 +127,7 @@ export class SaleComponent implements OnInit {
       this.products = [];
       this.getproducts();
       this.getcustomers();
+      // this.updateorderno()
       this.temporaryItem.Quantity = null;
       // this.products = JSON.parse(localStorage.getItem("Product"));
       this.products.forEach(product => {
@@ -132,9 +137,18 @@ export class SaleComponent implements OnInit {
       })
       this.customerdetails = { id: 0, name: '', phoneNo: '', email: '', address: '', companyId: this.loginfo.companyId, datastatus: '' }
     })
-
-
   }
+
+  updateorderno() {
+    this.orderkey.orderno++
+    localStorage.setItem('orderkey', JSON.stringify(this.orderkey))
+    // this.Auth.updateorderkey(this.orderkey).subscribe(data => { })
+    console.log(this.orderkey)
+  }
+
+
+
+
   getproducts() {
     this.Auth.getproducts().subscribe(data => {
       this.products = data;
@@ -217,6 +231,7 @@ export class SaleComponent implements OnInit {
 
   }
   savedata() {
+
     // if (this.order.CustomerDetails.datastatus == 'new') {
     this.addcustomer();
     // } else if (this.order.CustomerDetails.datastatus == 'old') {
@@ -345,7 +360,7 @@ export class SaleComponent implements OnInit {
       this.products.forEach(prod => {
         if (prod.stockBatchId == this.temporaryItem["stockBatchId"]) {
           prod.quantity -= this.temporaryItem.Quantity
-         
+
         }
       });
       this.temporaryItem = { DiscAmount: 0, Quantity: null, DiscPercent: 0 };
@@ -476,13 +491,13 @@ export class SaleComponent implements OnInit {
   batchproduct: any = [];
   selectedItem(batchproduct, barcodeId) {
     this.batchproduct = this.products.filter(x => x.barcodeId == barcodeId);
-    if(this.batchproduct.length > 1) {
+    if (this.batchproduct.length > 1) {
       this.modalService.open(batchproduct, { centered: true })
     } else {
       this.selectedproduct(this.batchproduct[0])
     }
     this.quantityel['nativeElement'].focus()
-    
+
   }
   selectedproduct(product) {
     console.log(product)
@@ -499,9 +514,32 @@ export class SaleComponent implements OnInit {
     if (this.temporaryItem.Quantity > this.temporaryItem.quantity) isvalid = false;
     return isvalid;
   }
+
+  orderkeyValidation() {
+    var todate = new Date().getDate()
+    var orderkeydate = new Date(this.orderkey.timestamp).getDate()
+    var ls_orderkey = JSON.parse(localStorage.getItem('orderkey'))
+    if (ls_orderkey) var ls_orderkeydate = new Date(ls_orderkey.timestamp).getDate()
+    var orderkey_obj: any = {}
+    if (ls_orderkey && ls_orderkey.timestamp > this.orderkey.timestamp) {
+      orderkey_obj = ls_orderkey
+    } else {
+      orderkey_obj = this.orderkey
+    }
+    if (new Date(orderkey_obj.timestamp).getDate() != todate) {
+      orderkey_obj.kotno = 1
+      orderkey_obj.orderno = 1
+    }
+    orderkey_obj.timestamp = new Date().getTime()
+    this.orderkey = orderkey_obj
+    localStorage.setItem('orderkey', JSON.stringify(this.orderkey))
+    this.Auth.updateorderkey(this.orderkey).subscribe(d => {})
+  }
   saveOrder() {
     console.log(this.order.CustomerDetails);
-
+    this.order.OrderNo = this.orderkey.orderno
+    this.updateorderno()    
+    this.order.OrderNo = this.orderkey.orderno
     this.order.BillDate = moment().format('YYYY-MM-DD HH:MM A')
     this.order.CreatedDate = moment().format('YYYY-MM-DD HH:MM A')
     this.order.BillDateTime = moment().format('YYYY-MM-DD HH:MM A')
@@ -509,12 +547,13 @@ export class SaleComponent implements OnInit {
     this.order.OrderedDateTime = moment().format('YYYY-MM-DD HH:MM A')
     this.order.DeliveryDateTime = moment().format('YYYY-MM-DD HH:MM A')
     this.order.ModifiedDate = moment().format('YYYY-MM-DD HH:MM A')
+    this.order.InvoiceNo = this.StoreId + moment().format('YYYYMMDD') + '/' + this.order.OrderNo
     this.order.CompanyId = this.loginfo.companyId
     this.order.StoreId = this.loginfo.storeId
     this.order.OrderedById = 18;
     this.order.ProdStatus = "1";
     this.order.WipStatus = "1"
-    this.order.OrderNo = this.OrderNo;
+    // this.order.OrderNo = this.OrderNo;
     this.order.SuppliedById = 12;
     // if (!navigator.onLine) {
     //   this.Auth.savepurchase(this.order).subscribe(data => {
@@ -541,7 +580,7 @@ export class SaleComponent implements OnInit {
     })
     this.notification.success("Ordered Saved successfully!", `Ordered Saved successfully.`)
   }
-  crossclick(){
+  crossclick() {
     this.temporaryItem = { DiscAmount: 0, Quantity: null, DiscPercent: 0 };
     this.productinput['nativeElement'].focus()
     this.model = "";
